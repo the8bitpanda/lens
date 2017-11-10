@@ -8,4 +8,25 @@
         <item name="colorAccent">@color/colorAccent</item>
     </style>
 
+    <style name="CustomButtons.Primary" parent="ThemeOverlay.AppCompat">
+        <item name="colorAccent">@color/colorPrimary</item>
+    </style>
+
+    <style name="CustomButtons.Red" parent="ThemeOverlay.AppCompat">
+        <item name="colorAccent">@color/colorRed</item>
+    </style>
+
+    <style name="CustomButtons.Yellow" parent="ThemeOverlay.AppCompat">
+        <item name="colorAccent">@color/colorYellow</item>
+    </style>
+
+    <style name="CustomButtons.Blue" parent="ThemeOverlay.AppCompat">
+        <item name="colorAccent">@color/colorBlue</item>
+    </style>
+
+    <style name="CustomButtons.Green" parent="ThemeOverlay.AppCompat">
+        <item name="colorAccent">@color/colorGreen</item>
+    </style>
+
+
 </resources>
