@@ -1,5 +1,5 @@
 <resources>
-    <string name="app_name">Lens</string>
+    <string name="app_name">lens</string>
     <string name="title_home">Home</string>
     <string name="title_history">History</string>
     <string name="title_settings">Settings</string>
