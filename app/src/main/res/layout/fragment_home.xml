@@ -12,11 +12,11 @@
         <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="0dp"
-            android:layout_marginEnd="6dp"
-            android:layout_marginLeft="6dp"
-            android:layout_marginRight="6dp"
-            android:layout_marginStart="6dp"
-            android:layout_marginTop="6dp"
+            android:layout_marginEnd="4dp"
+            android:layout_marginLeft="4dp"
+            android:layout_marginRight="4dp"
+            android:layout_marginStart="4dp"
+            android:layout_marginTop="4dp"
             android:layout_weight="1"
             android:orientation="horizontal">
 
@@ -25,30 +25,28 @@
                 style="@style/Widget.AppCompat.Button.Colored"
                 android:layout_width="0dp"
                 android:layout_height="match_parent"
-                android:layout_marginEnd="2dp"
-                android:layout_marginRight="2dp"
+                android:layout_marginEnd="1dp"
+                android:layout_marginRight="1dp"
                 android:layout_weight="1"
-                android:drawablePadding="8dp"
-                android:drawableTop="@drawable/ic_public_white_96dp"
-                android:padding="8dp"
+                android:drawableTop="@drawable/ic_public_white_72dp"
                 android:text="@string/home_weblink"
                 android:textAllCaps="false"
                 android:textColor="@color/colorWhite"
+                android:textSize="12sp"
                 android:theme="@style/CustomButtons.Red" />
 
             <Button
                 style="@style/Widget.AppCompat.Button.Colored"
                 android:layout_width="0dp"
                 android:layout_height="match_parent"
-                android:layout_marginLeft="2dp"
-                android:layout_marginStart="2dp"
+                android:layout_marginLeft="1dp"
+                android:layout_marginStart="1dp"
                 android:layout_weight="1"
-                android:drawablePadding="8dp"
-                android:drawableTop="@drawable/ic_call_white_96dp"
-                android:padding="8dp"
+                android:drawableTop="@drawable/ic_call_white_72dp"
                 android:text="@string/home_call"
                 android:textAllCaps="false"
                 android:textColor="@color/colorWhite"
+                android:textSize="12sp"
                 android:theme="@style/CustomButtons.Blue" />
         </LinearLayout>
 
@@ -56,64 +54,61 @@
         <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="0dp"
-            android:layout_marginEnd="6dp"
-            android:layout_marginLeft="6dp"
-            android:layout_marginRight="6dp"
-            android:layout_marginStart="6dp"
+            android:layout_marginEnd="4dp"
+            android:layout_marginLeft="4dp"
+            android:layout_marginRight="4dp"
+            android:layout_marginStart="4dp"
             android:layout_weight="1">
 
             <Button
                 style="@style/Widget.AppCompat.Button.Colored"
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"
-                android:drawableLeft="@drawable/ic_contacts_white_96dp"
-                android:drawablePadding="8dp"
-                android:drawableStart="@drawable/ic_contacts_white_96dp"
-                android:padding="8dp"
+                android:drawableLeft="@drawable/ic_contacts_white_72dp"
+                android:drawableStart="@drawable/ic_contacts_white_72dp"
                 android:text="@string/home_businesscard"
                 android:textAllCaps="false"
                 android:textColor="@color/colorWhite"
+                android:textSize="12sp"
                 android:theme="@style/CustomButtons.Primary" />
         </LinearLayout>
 
         <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="0dp"
-            android:layout_marginBottom="6dp"
-            android:layout_marginEnd="6dp"
-            android:layout_marginLeft="6dp"
-            android:layout_marginRight="6dp"
-            android:layout_marginStart="6dp"
+            android:layout_marginBottom="4dp"
+            android:layout_marginEnd="4dp"
+            android:layout_marginLeft="4dp"
+            android:layout_marginRight="4dp"
+            android:layout_marginStart="4dp"
             android:layout_weight="1">
 
             <Button
                 style="@style/Widget.AppCompat.Button.Colored"
                 android:layout_width="0dp"
                 android:layout_height="match_parent"
-                android:layout_marginEnd="2dp"
-                android:layout_marginRight="2dp"
+                android:layout_marginEnd="1dp"
+                android:layout_marginRight="1dp"
                 android:layout_weight="1"
-                android:drawablePadding="8dp"
-                android:drawableTop="@drawable/ic_search_white_96dp"
-                android:padding="8dp"
+                android:drawableTop="@drawable/ic_search_white_72dp"
                 android:text="@string/home_search"
                 android:textAllCaps="false"
                 android:textColor="@color/colorWhite"
+                android:textSize="12sp"
                 android:theme="@style/CustomButtons.Yellow" />
 
             <Button
                 style="@style/Widget.AppCompat.Button.Colored"
                 android:layout_width="0dp"
                 android:layout_height="match_parent"
-                android:layout_marginLeft="2dp"
-                android:layout_marginStart="2dp"
+                android:layout_marginLeft="1dp"
+                android:layout_marginStart="1dp"
                 android:layout_weight="1"
-                android:drawablePadding="8dp"
-                android:drawableTop="@drawable/ic_g_translate_white_96dp"
-                android:padding="8dp"
+                android:drawableTop="@drawable/ic_g_translate_white_72dp"
                 android:text="@string/home_translate"
                 android:textAllCaps="false"
                 android:textColor="@color/colorWhite"
+                android:textSize="12sp"
                 android:theme="@style/CustomButtons.Green" />
         </LinearLayout>
 
