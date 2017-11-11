@@ -18,10 +18,10 @@ import android.support.design.widget.Snackbar;
 import android.support.v4.app.ActivityCompat;
 import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
-import android.view.GestureDetector;
 import android.view.MotionEvent;
 import android.view.ScaleGestureDetector;
 import android.view.View;
+import android.widget.TextView;
 import android.widget.Toast;
 
 import com.eightbitpanda.lens.ui.camera.CameraSource;
@@ -29,11 +29,9 @@ import com.eightbitpanda.lens.ui.camera.CameraSourcePreview;
 import com.eightbitpanda.lens.ui.camera.GraphicOverlay;
 import com.google.android.gms.common.ConnectionResult;
 import com.google.android.gms.common.GoogleApiAvailability;
-import com.google.android.gms.vision.text.TextBlock;
 import com.google.android.gms.vision.text.TextRecognizer;
 
 import java.io.IOException;
-import java.util.Locale;
 
 /**
  * Activity for the Ocr Detecting app.  This app detects text and displays the value with the
@@ -41,7 +39,6 @@ import java.util.Locale;
  * size, and contents of each TextBlock.
  */
 public final class ScannerActivity extends AppCompatActivity {
-    // Constants used to pass extra data in the intent
     public static final String AutoFocus = "AutoFocus";
     public static final String UseFlash = "UseFlash";
     public static final String TextBlockObject = "String";
@@ -50,13 +47,14 @@ public final class ScannerActivity extends AppCompatActivity {
     private static final int RC_HANDLE_GMS = 9001;
     // Permission request codes need to be < 256
     private static final int RC_HANDLE_CAMERA_PERM = 2;
+    // Constants used to pass extra data in the intent
+    public String type;
     private CameraSource mCameraSource;
     private CameraSourcePreview mPreview;
     private GraphicOverlay<OcrGraphic> mGraphicOverlay;
 
     // Helper objects for detecting taps and pinches.
     private ScaleGestureDetector scaleGestureDetector;
-    private GestureDetector gestureDetector;
 
     // A TextToSpeech engine for speaking a String value.
     private TextToSpeech tts;
@@ -70,12 +68,14 @@ public final class ScannerActivity extends AppCompatActivity {
         setContentView(R.layout.activity_scanner);
 
         Bundle extras = getIntent().getExtras();
-        String type = extras.getString("Type");
+        type = extras.getString("Type");
         if (getActionBar() != null)
             getActionBar().setTitle(type);
         if (getSupportActionBar() != null)
             getSupportActionBar().setTitle(type);
 
+        TextView helpText = (TextView) findViewById(R.id.helptext);
+        setHelpText(helpText);
         mPreview = (CameraSourcePreview) findViewById(R.id.preview);
         mGraphicOverlay = (GraphicOverlay<OcrGraphic>) findViewById(R.id.graphicOverlay);
 
@@ -92,26 +92,13 @@ public final class ScannerActivity extends AppCompatActivity {
             requestCameraPermission();
         }
 
-        gestureDetector = new GestureDetector(this, new CaptureGestureListener());
         scaleGestureDetector = new ScaleGestureDetector(this, new ScaleListener());
 
-        Snackbar.make(mGraphicOverlay, "Tap to Speak. Pinch/Stretch to zoom",
-                Snackbar.LENGTH_LONG)
-                .show();
-// TODO: Set up the Text To Speech engine.
-        TextToSpeech.OnInitListener listener =
-                new TextToSpeech.OnInitListener() {
-                    @Override
-                    public void onInit(final int status) {
-                        if (status == TextToSpeech.SUCCESS) {
-                            Log.d("TTS", "Text to speech engine started successfully.");
-                            tts.setLanguage(Locale.US);
-                        } else {
-                            Log.d("TTS", "Error starting the text to speech engine.");
-                        }
-                    }
-                };
-        tts = new TextToSpeech(this.getApplicationContext(), listener);
+    }
+
+    private void setHelpText(TextView helpText) {
+        helpText.setText("Pinch/Stretch to zoom");
+
     }
 
 
@@ -151,9 +138,7 @@ public final class ScannerActivity extends AppCompatActivity {
     public boolean onTouchEvent(MotionEvent e) {
         boolean b = scaleGestureDetector.onTouchEvent(e);
 
-        boolean c = gestureDetector.onTouchEvent(e);
-
-        return b || c || super.onTouchEvent(e);
+        return b || super.onTouchEvent(e);
     }
 
     /**
@@ -307,39 +292,6 @@ public final class ScannerActivity extends AppCompatActivity {
         }
     }
 
-    /**
-     * onTap is called to speak the tapped TextBlock, if any, out loud.
-     *
-     * @param rawX - the raw position of the tap
-     * @param rawY - the raw position of the tap.
-     * @return true if the tap was on a TextBlock
-     */
-    private boolean onTap(float rawX, float rawY) {
-        // TODO: Speak the text when the user taps on screen.
-        OcrGraphic graphic = mGraphicOverlay.getGraphicAtLocation(rawX, rawY);
-        TextBlock text = null;
-        if (graphic != null) {
-            text = graphic.getTextBlock();
-            if (text != null && text.getValue() != null) {
-                Log.d(TAG, "text data is being spoken! " + text.getValue());
-                // Speak the string.
-                //tts.speak(text.getValue(), TextToSpeech.QUEUE_ADD, null, "DEFAULT");
-            } else {
-                Log.d(TAG, "text data is null");
-            }
-        } else {
-            Log.d(TAG, "no text detected");
-        }
-        return text != null;
-    }
-
-    private class CaptureGestureListener extends GestureDetector.SimpleOnGestureListener {
-
-        @Override
-        public boolean onSingleTapConfirmed(MotionEvent e) {
-            return onTap(e.getRawX(), e.getRawY()) || super.onSingleTapConfirmed(e);
-        }
-    }
 
     private class ScaleListener implements ScaleGestureDetector.OnScaleGestureListener {
 
