@@ -22,6 +22,7 @@
 
 
             <Button
+                android:id="@+id/button_weblink"
                 style="@style/Widget.AppCompat.Button.Colored"
                 android:layout_width="0dp"
                 android:layout_height="match_parent"
@@ -36,6 +37,7 @@
                 android:theme="@style/CustomButtons.Red" />
 
             <Button
+                android:id="@+id/button_call"
                 style="@style/Widget.AppCompat.Button.Colored"
                 android:layout_width="0dp"
                 android:layout_height="match_parent"
@@ -61,6 +63,7 @@
             android:layout_weight="1">
 
             <Button
+                android:id="@+id/button_bussinesscard"
                 style="@style/Widget.AppCompat.Button.Colored"
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"
@@ -84,11 +87,27 @@
             android:layout_weight="1">
 
             <Button
+                android:id="@+id/button_translate"
                 style="@style/Widget.AppCompat.Button.Colored"
                 android:layout_width="0dp"
                 android:layout_height="match_parent"
                 android:layout_marginEnd="1dp"
                 android:layout_marginRight="1dp"
+                android:layout_weight="1"
+                android:drawableTop="@drawable/ic_g_translate_white_72dp"
+                android:text="@string/home_translate"
+                android:textAllCaps="false"
+                android:textColor="@color/colorWhite"
+                android:textSize="12sp"
+                android:theme="@style/CustomButtons.Green" />
+
+            <Button
+                android:id="@+id/button_search"
+                style="@style/Widget.AppCompat.Button.Colored"
+                android:layout_width="0dp"
+                android:layout_height="match_parent"
+                android:layout_marginLeft="1dp"
+                android:layout_marginStart="1dp"
                 android:layout_weight="1"
                 android:drawableTop="@drawable/ic_search_white_72dp"
                 android:text="@string/home_search"
@@ -97,19 +116,7 @@
                 android:textSize="12sp"
                 android:theme="@style/CustomButtons.Yellow" />
 
-            <Button
-                style="@style/Widget.AppCompat.Button.Colored"
-                android:layout_width="0dp"
-                android:layout_height="match_parent"
-                android:layout_marginLeft="1dp"
-                android:layout_marginStart="1dp"
-                android:layout_weight="1"
-                android:drawableTop="@drawable/ic_g_translate_white_72dp"
-                android:text="@string/home_translate"
-                android:textAllCaps="false"
-                android:textColor="@color/colorWhite"
-                android:textSize="12sp"
-                android:theme="@style/CustomButtons.Green" />
+
         </LinearLayout>
 
     </LinearLayout>
