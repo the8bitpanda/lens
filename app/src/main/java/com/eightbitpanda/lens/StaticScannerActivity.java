@@ -4,45 +4,34 @@ import android.Manifest;
 import android.app.Activity;
 import android.app.AlertDialog;
 import android.content.DialogInterface;
-import android.content.Intent;
 import android.content.pm.ActivityInfo;
 import android.content.pm.PackageManager;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.hardware.Camera;
 import android.hardware.Camera.PictureCallback;
-import android.net.Uri;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.design.widget.Snackbar;
 import android.support.v4.app.ActivityCompat;
 import android.support.v7.app.AppCompatActivity;
-import android.text.TextUtils;
-import android.util.Patterns;
-import android.util.SparseArray;
+import android.util.Log;
 import android.view.View;
+import android.view.ViewGroup;
 import android.widget.FrameLayout;
+import android.widget.ImageView;
+import android.widget.RelativeLayout;
 import android.widget.TextView;
 import android.widget.Toast;
 
 import com.eightbitpanda.lens.ui.staticscanner.ImageSurfaceView;
-import com.google.android.gms.vision.Frame;
-import com.google.android.gms.vision.text.TextBlock;
 import com.google.android.gms.vision.text.TextRecognizer;
 
-import java.util.regex.Matcher;
-import java.util.regex.Pattern;
+import java.util.List;
 
 public class StaticScannerActivity extends AppCompatActivity {
 
     private static final int RC_HANDLE_CAMERA_PERM = 2;
-
-    private Camera camera;
-
-    private FrameLayout cameraPreviewLayout;
-    // private ImageButton captureButton;
-    private TextRecognizer detector;
-    private String type;
     PictureCallback pictureCallback = new PictureCallback() {
         @Override
         public void onPictureTaken(byte[] data, Camera camera) {
@@ -51,10 +40,15 @@ public class StaticScannerActivity extends AppCompatActivity {
                 Toast.makeText(StaticScannerActivity.this, "Captured image is empty", Toast.LENGTH_LONG).show();
             } else {
                 Toast.makeText(StaticScannerActivity.this, "Captured", Toast.LENGTH_LONG).show();
-                scanBitmap(bitmap);
+
             }
         }
     };
+    private Camera camera;
+    private FrameLayout cameraPreviewLayout;
+    // private ImageButton captureButton;
+    private TextRecognizer detector;
+    private String type;
     //private ImageView capturedImageHolder;
     private TextView helpText;
 
@@ -134,14 +128,41 @@ public class StaticScannerActivity extends AppCompatActivity {
         ImageSurfaceView mImageSurfaceView = new ImageSurfaceView(this, camera);
         cameraPreviewLayout.addView(mImageSurfaceView);
 
-        cameraPreviewLayout.setOnClickListener(new View.OnClickListener() {
+        ImageView captureButton = new ImageView(this);
+        captureButton.setLayoutParams(new FrameLayout.LayoutParams(ViewGroup.LayoutParams.WRAP_CONTENT, ViewGroup.LayoutParams.WRAP_CONTENT));
+        captureButton.setImageResource(R.drawable.ic_call_white_72dp);
+        cameraPreviewLayout.addView(captureButton);
+
+        ImageView galleryButton = new ImageView(this);
+        galleryButton.setLayoutParams(new RelativeLayout.LayoutParams(ViewGroup.LayoutParams.WRAP_CONTENT, ViewGroup.LayoutParams.WRAP_CONTENT));
+        galleryButton.setImageResource(R.drawable.ic_call_white_72dp);
+        cameraPreviewLayout.addView(galleryButton);
+
+        ImageView flashButton = new ImageView(this);
+        flashButton.setLayoutParams(new RelativeLayout.LayoutParams(ViewGroup.LayoutParams.WRAP_CONTENT, ViewGroup.LayoutParams.WRAP_CONTENT));
+        flashButton.setImageResource(R.drawable.ic_call_white_72dp);
+        cameraPreviewLayout.addView(flashButton);
+
+        captureButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 Toast.makeText(StaticScannerActivity.this, "Called", Toast.LENGTH_SHORT).show();
                 camera.takePicture(null, null, pictureCallback);
             }
         });
+
+        flashButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                if (Camera.Parameters.FLASH_MODE_ON.equals(camera.getParameters().getFlashMode()))
+                    camera.getParameters().setFlashMode(Camera.Parameters.FLASH_MODE_OFF);
+                else
+                    camera.getParameters().setFlashMode(Camera.Parameters.FLASH_MODE_ON);
+
+            }
+        });
     }
+
 
     private Camera getCamera() {
         Camera mCamera = null;
@@ -150,6 +171,16 @@ public class StaticScannerActivity extends AppCompatActivity {
             mCamera.setDisplayOrientation(90);
             Camera.Parameters params = mCamera.getParameters();
             params.setFocusMode(Camera.Parameters.FOCUS_MODE_CONTINUOUS_PICTURE);
+
+
+            List<Camera.Size> sizes = params.getSupportedPictureSizes();
+
+            if (!sizes.isEmpty()) {
+                Camera.Size mSize = sizes.get(0);
+                Log.i("Res", "Chosen resolution: " + mSize.width + " " + mSize.height);
+                params.setPictureSize(mSize.width, mSize.height);
+            }
+
             mCamera.setParameters(params);
 
 
@@ -158,70 +189,6 @@ public class StaticScannerActivity extends AppCompatActivity {
         }
         return mCamera;
     }
-
-    private void scanBitmap(Bitmap bitmap) {
-        if (detector.isOperational() && bitmap != null) {
-            Frame frame = new Frame.Builder().setBitmap(bitmap).build();
-            SparseArray<TextBlock> items = detector.detect(frame);
-            for (int i = 0; i < items.size(); ++i) {
-
-                TextBlock item = items.valueAt(i);
-                Toast.makeText(this, "Detected: " + item.getValue(), Toast.LENGTH_SHORT).show();
-
-                if (item != null && item.getValue() != null && validItemType(item.getValue())) {
-                    Toast.makeText(this, "Detected: " + item.getValue(), Toast.LENGTH_SHORT).show();
-                    success(type, item.getValue());
-                    break;
-
-                }
-            }
-        } else {
-            Toast.makeText(this, "Could not set up the detector!", Toast.LENGTH_SHORT).show();
-        }
-    }
-
-    private void success(String type, String itemValue) {
-        switch (type) {
-            case "Weblink":
-                if (!itemValue.startsWith("http://") && !itemValue.startsWith("https://"))
-                    itemValue = "http://" + itemValue;
-                Intent browserIntent = new Intent(Intent.ACTION_VIEW, Uri.parse(itemValue));
-                startActivity(browserIntent);
-                break;
-            case "Call":
-                Intent intent = new Intent(Intent.ACTION_DIAL);
-                intent.setData(Uri.parse("tel:" + itemValue));
-                startActivity(intent);
-
-                break;
-            case "Bussiness Card":
-                break;
-            case "Translate":
-                break;
-            case "Search":
-                break;
-        }
-    }
-
-    private boolean validItemType(String itemValue) {
-        switch (type) {
-            case "Weblink":
-                String URL_REGEX = "^((https?|ftp)://|(www|ftp)\\.)?[a-z0-9-]+(\\.[a-z0-9-]+)+([/?].*)?$";
-                Pattern p = Pattern.compile(URL_REGEX);
-                Matcher m = p.matcher(itemValue);
-                return m.find();
-            case "Call":
-                return !TextUtils.isEmpty(itemValue) && Patterns.PHONE.matcher(itemValue).matches();
-            case "Bussiness Card":
-                return true;
-            case "Translate":
-                return true;
-            case "Search":
-                return true;
-        }
-        return false;
-    }
-
 
     private void requestCameraPermission() {
 
@@ -277,12 +244,5 @@ public class StaticScannerActivity extends AppCompatActivity {
                 .setPositiveButton(R.string.ok, listener)
                 .show();
     }
-
-    @Override
-    protected void onResume() {
-        super.onResume();
-        setUpCamera();
-    }
-
 
 }
