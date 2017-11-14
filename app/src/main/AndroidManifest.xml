@@ -4,7 +4,7 @@
 
     <uses-permission android:name="android.permission.CAMERA" />
     <uses-feature android:name="android.hardware.camera" />
-    <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE" />
+    <uses-feature android:name="android.hardware.camera.autofocus" />
 
     <application
         android:allowBackup="true"
@@ -27,7 +27,7 @@
             </intent-filter>
         </activity>
         <activity android:name=".ScannerActivity" />
-        <activity android:name=".SnapScannerActivity"></activity>
+        <activity android:name=".StaticScannerActivity"></activity>
     </application>
 
 </manifest>

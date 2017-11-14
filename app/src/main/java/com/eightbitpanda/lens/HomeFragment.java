@@ -38,7 +38,7 @@ public class HomeFragment extends Fragment {
             @Override
             public void onClick(View view) {
                 //call scanner activity
-                Intent i = new Intent(getActivity(), ScannerActivity.class);
+                Intent i = new Intent(getActivity(), StaticScannerActivity.class);
                 i.putExtra("Type", type);
                 startActivity(i);
 
