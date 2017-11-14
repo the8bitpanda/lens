@@ -16,16 +16,14 @@ import android.support.design.widget.Snackbar;
 import android.support.v4.app.ActivityCompat;
 import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
+import android.view.Gravity;
 import android.view.View;
-import android.view.ViewGroup;
 import android.widget.FrameLayout;
 import android.widget.ImageView;
-import android.widget.RelativeLayout;
 import android.widget.TextView;
 import android.widget.Toast;
 
 import com.eightbitpanda.lens.ui.staticscanner.ImageSurfaceView;
-import com.google.android.gms.vision.text.TextRecognizer;
 
 import java.util.List;
 
@@ -36,20 +34,14 @@ public class StaticScannerActivity extends AppCompatActivity {
         @Override
         public void onPictureTaken(byte[] data, Camera camera) {
             Bitmap bitmap = BitmapFactory.decodeByteArray(data, 0, data.length);
-            if (bitmap == null) {
-                Toast.makeText(StaticScannerActivity.this, "Captured image is empty", Toast.LENGTH_LONG).show();
-            } else {
+            if (bitmap != null) {
                 Toast.makeText(StaticScannerActivity.this, "Captured", Toast.LENGTH_LONG).show();
-
+                // TODO: Call Result Activity and pass the bitmap to scan it there
             }
         }
     };
     private Camera camera;
     private FrameLayout cameraPreviewLayout;
-    // private ImageButton captureButton;
-    private TextRecognizer detector;
-    private String type;
-    //private ImageView capturedImageHolder;
     private TextView helpText;
 
     @Override
@@ -59,17 +51,15 @@ public class StaticScannerActivity extends AppCompatActivity {
         setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_PORTRAIT);
 
         cameraPreviewLayout = (FrameLayout) findViewById(R.id.camera_preview);
-        // captureButton = (ImageButton) findViewById(R.id.capture_button);
-        detector = new TextRecognizer.Builder(getApplicationContext()).build();
 
         Bundle extras = getIntent().getExtras();
-        type = extras.getString("Type");
+        assert extras != null;
+        String type = extras.getString("Type");
         setActionBarTitle(getActionBarTitle(type));
         helpText = (TextView) findViewById(R.id.help_text);
         setHelpText(getHelpText(type), helpText);
 
 
-        //capturedImageHolder = (ImageView) findViewById(R.id.captured_image);
         int rc = ActivityCompat.checkSelfPermission(this, Manifest.permission.CAMERA);
         if (rc == PackageManager.PERMISSION_GRANTED) {
             setUpCamera();
@@ -129,19 +119,16 @@ public class StaticScannerActivity extends AppCompatActivity {
         cameraPreviewLayout.addView(mImageSurfaceView);
 
         ImageView captureButton = new ImageView(this);
-        captureButton.setLayoutParams(new FrameLayout.LayoutParams(ViewGroup.LayoutParams.WRAP_CONTENT, ViewGroup.LayoutParams.WRAP_CONTENT));
-        captureButton.setImageResource(R.drawable.ic_call_white_72dp);
-        cameraPreviewLayout.addView(captureButton);
+        captureButton.setImageResource(R.drawable.ic_camera_white_72dp);
+        cameraPreviewLayout.addView(captureButton, getParams(Gravity.CENTER_HORIZONTAL, 0, 0, 8));
 
         ImageView galleryButton = new ImageView(this);
-        galleryButton.setLayoutParams(new RelativeLayout.LayoutParams(ViewGroup.LayoutParams.WRAP_CONTENT, ViewGroup.LayoutParams.WRAP_CONTENT));
-        galleryButton.setImageResource(R.drawable.ic_call_white_72dp);
-        cameraPreviewLayout.addView(galleryButton);
+        galleryButton.setImageResource(R.drawable.ic_photo_size_select_actual_white_48dp);
+        cameraPreviewLayout.addView(galleryButton, getParams(Gravity.START, 8, 0, 8));
 
-        ImageView flashButton = new ImageView(this);
-        flashButton.setLayoutParams(new RelativeLayout.LayoutParams(ViewGroup.LayoutParams.WRAP_CONTENT, ViewGroup.LayoutParams.WRAP_CONTENT));
-        flashButton.setImageResource(R.drawable.ic_call_white_72dp);
-        cameraPreviewLayout.addView(flashButton);
+        final ImageView flashButton = new ImageView(this);
+        flashButton.setImageResource(R.drawable.ic_flash_on_white_48dp);
+        cameraPreviewLayout.addView(flashButton, getParams(Gravity.END, 0, 8, 0));
 
         captureButton.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -154,15 +141,27 @@ public class StaticScannerActivity extends AppCompatActivity {
         flashButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                if (Camera.Parameters.FLASH_MODE_ON.equals(camera.getParameters().getFlashMode()))
+                if (Camera.Parameters.FLASH_MODE_ON.equals(camera.getParameters().getFlashMode())) {
                     camera.getParameters().setFlashMode(Camera.Parameters.FLASH_MODE_OFF);
-                else
+                    flashButton.setImageResource(R.drawable.ic_flash_off_white_48dp);
+                } else {
                     camera.getParameters().setFlashMode(Camera.Parameters.FLASH_MODE_ON);
+                    flashButton.setImageResource(R.drawable.ic_flash_on_white_48dp);
+
+                }
 
             }
         });
     }
 
+    private FrameLayout.LayoutParams getParams(int gravity, int lM, int rM, int bM) {
+        FrameLayout.LayoutParams lp = new FrameLayout.LayoutParams(
+                FrameLayout.LayoutParams.WRAP_CONTENT,
+                FrameLayout.LayoutParams.WRAP_CONTENT,
+                Gravity.BOTTOM | gravity);
+        lp.setMargins(lM, 0, rM, bM);
+        return lp;
+    }
 
     private Camera getCamera() {
         Camera mCamera = null;
@@ -171,7 +170,6 @@ public class StaticScannerActivity extends AppCompatActivity {
             mCamera.setDisplayOrientation(90);
             Camera.Parameters params = mCamera.getParameters();
             params.setFocusMode(Camera.Parameters.FOCUS_MODE_CONTINUOUS_PICTURE);
-
 
             List<Camera.Size> sizes = params.getSupportedPictureSizes();
 
