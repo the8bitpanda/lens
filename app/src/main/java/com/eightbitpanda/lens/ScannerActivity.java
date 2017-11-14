@@ -69,13 +69,10 @@ public final class ScannerActivity extends AppCompatActivity {
 
         Bundle extras = getIntent().getExtras();
         type = extras.getString("Type");
-        if (getActionBar() != null)
-            getActionBar().setTitle(type);
-        if (getSupportActionBar() != null)
-            getSupportActionBar().setTitle(type);
-
+        setActionBarTitle(getActionBarTitle(type));
         TextView helpText = (TextView) findViewById(R.id.helptext);
-        setHelpText(helpText);
+        setHelpText(getHelpText(type), helpText);
+
         mPreview = (CameraSourcePreview) findViewById(R.id.preview);
         mGraphicOverlay = (GraphicOverlay<OcrGraphic>) findViewById(R.id.graphicOverlay);
 
@@ -96,9 +93,48 @@ public final class ScannerActivity extends AppCompatActivity {
 
     }
 
-    private void setHelpText(TextView helpText) {
-        helpText.setText("Pinch/Stretch to zoom");
+    private String getActionBarTitle(String type) {
+        switch (type) {
+            case "Weblink":
+                return "Looking for Weblinks";
+            case "Call":
+                return "Looking for Phone Numbers";
+            case "Business Card":
+                return "Scanning Business Card";
+            case "Translate":
+                return "Translate";
+            case "Search":
+                return "Search";
+        }
+        return "";
+    }
 
+    private void setActionBarTitle(String title) {
+        if (getActionBar() != null)
+            getActionBar().setTitle(title);
+        if (getSupportActionBar() != null)
+            getSupportActionBar().setTitle(title);
+    }
+
+    private String getHelpText(String type) {
+        switch (type) {
+            case "Weblink":
+                return "Place the scanner directly over the Weblink you want to open";
+            case "Call":
+                return "Place the scanner directly over the Phone Number you want to call";
+            case "Business Card":
+                return "Place the scanner directly over the Business Card you want to save";
+            case "Translate":
+                return "Place the scanner directly over the text you want to Translate";
+            case "Search":
+                return "Place the scanner directly over the text you want to Search";
+        }
+        return "";
+    }
+
+    private void setHelpText(String text, TextView helpText) {
+        text = text + "\nPinch/Stretch to zoom";
+        helpText.setText(text);
     }
 
 
@@ -155,10 +191,10 @@ public final class ScannerActivity extends AppCompatActivity {
 
         // Create the TextRecognizer
         TextRecognizer textRecognizer = new TextRecognizer.Builder(context).build();
-// TODO: Set the TextRecognizer's Processor.
-        textRecognizer.setProcessor(new OcrDetectorProcessor(mGraphicOverlay));
+        // Set the TextRecognizer's Processor.
+        textRecognizer.setProcessor(new OcrDetectorProcessor(mGraphicOverlay, type));
 
-// TODO: Check if the TextRecognizer is operational.
+        // Check if the TextRecognizer is operational.
         if (!textRecognizer.isOperational()) {
             Log.w(TAG, "Detector dependencies are not yet available.");
 
@@ -172,7 +208,7 @@ public final class ScannerActivity extends AppCompatActivity {
                 Log.w(TAG, getString(R.string.low_storage_error));
             }
         }
-        // TODO: Create the mCameraSource using the TextRecognizer.
+        // Create the mCameraSource using the TextRecognizer.
         mCameraSource =
                 new CameraSource.Builder(getApplicationContext(), textRecognizer)
                         .setFacing(CameraSource.CAMERA_FACING_BACK)
