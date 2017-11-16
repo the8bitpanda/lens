@@ -21,6 +21,8 @@ import android.support.v7.app.AppCompatActivity;
 import android.view.Gravity;
 import android.view.SoundEffectConstants;
 import android.view.View;
+import android.view.animation.Animation;
+import android.view.animation.AnimationUtils;
 import android.widget.FrameLayout;
 import android.widget.ImageView;
 import android.widget.TextView;
@@ -124,7 +126,7 @@ public class StaticScannerActivity extends AppCompatActivity {
         ImageSurfaceView mImageSurfaceView = new ImageSurfaceView(this, camera);
         cameraPreviewLayout.addView(mImageSurfaceView);
 
-        ImageView captureButton = new ImageView(this);
+        final ImageView captureButton = new ImageView(this);
         captureButton.setImageResource(R.drawable.ic_camera_white_72dp);
         cameraPreviewLayout.addView(captureButton, getParams(Gravity.CENTER_HORIZONTAL, 0, 0, 8));
 
@@ -141,6 +143,10 @@ public class StaticScannerActivity extends AppCompatActivity {
             public void onClick(View v) {
                 try {
                     v.playSoundEffect(SoundEffectConstants.CLICK);
+                    Animation rotation = AnimationUtils.loadAnimation(v.getContext(), R.anim.rotate);
+                    rotation.setFillAfter(true);
+                    captureButton.startAnimation(rotation);
+                    captureButton.setEnabled(false);
                     camera.takePicture(null, null, pictureCallback);
                 } catch (Exception e) {
                     Toast.makeText(StaticScannerActivity.this, "Camera is busy", Toast.LENGTH_SHORT).show();
@@ -304,4 +310,9 @@ public class StaticScannerActivity extends AppCompatActivity {
                 .show();
     }
 
+    @Override
+    protected void onPause() {
+        super.onPause();
+        this.finish();
+    }
 }
