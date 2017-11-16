@@ -9,16 +9,17 @@ import android.content.pm.ActivityInfo;
 import android.content.pm.PackageManager;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
+import android.graphics.Matrix;
 import android.hardware.Camera;
 import android.hardware.Camera.PictureCallback;
+import android.media.ExifInterface;
 import android.os.Bundle;
-import android.os.Environment;
 import android.support.annotation.NonNull;
 import android.support.design.widget.Snackbar;
 import android.support.v4.app.ActivityCompat;
 import android.support.v7.app.AppCompatActivity;
-import android.util.Log;
 import android.view.Gravity;
+import android.view.SoundEffectConstants;
 import android.view.View;
 import android.widget.FrameLayout;
 import android.widget.ImageView;
@@ -29,7 +30,7 @@ import com.eightbitpanda.lens.ui.staticscanner.ImageSurfaceView;
 
 import java.io.File;
 import java.io.FileOutputStream;
-import java.io.OutputStream;
+import java.io.IOException;
 import java.util.List;
 
 public class StaticScannerActivity extends AppCompatActivity {
@@ -40,37 +41,14 @@ public class StaticScannerActivity extends AppCompatActivity {
         public void onPictureTaken(byte[] data, Camera camera) {
             Bitmap bitmap = BitmapFactory.decodeByteArray(data, 0, data.length);
             if (bitmap != null) {
-                Toast.makeText(StaticScannerActivity.this, "Captured", Toast.LENGTH_LONG).show();
-                // TODO: Call Result Activity and pass the bitmap to scan it there
-                callToScannerResultActivity(bitmap);
+                //Call Result Activity and pass the bitmap to scan it there
+                callToScannerResultActivity(bitmap, true);
             }
         }
     };
     private Camera camera;
     private FrameLayout cameraPreviewLayout;
     private TextView helpText;
-
-    private void callToScannerResultActivity(Bitmap bitmap) {
-
-        File f3 = new File(Environment.getExternalStorageDirectory() + "/inpaint/");
-        if (!f3.exists())
-            f3.mkdirs();
-        OutputStream outStream = null;
-        String filePath = Environment.getExternalStorageDirectory() + "/inpaint/" + "seconds" + ".png";
-        File file = new File(filePath);
-        try {
-            outStream = new FileOutputStream(file);
-            bitmap.compress(Bitmap.CompressFormat.PNG, 100, outStream);
-            outStream.close();
-            Toast.makeText(getApplicationContext(), "Saved", Toast.LENGTH_LONG).show();
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
-        Intent intent = new Intent(this, ScannerResultActivity.class);
-        intent.putExtra("filePath", filePath);
-        startActivity(intent);
-        this.finish();
-    }
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -108,8 +86,8 @@ public class StaticScannerActivity extends AppCompatActivity {
                 return "Scanning Business Card";
             case "Translate":
                 return "Translate";
-            case "Search":
-                return "Search";
+            case "Copy":
+                return "Looking for text to copy";
         }
         return "";
     }
@@ -124,15 +102,15 @@ public class StaticScannerActivity extends AppCompatActivity {
     private String getHelpText(String type) {
         switch (type) {
             case "Weblink":
-                return "Place the scanner directly over the Weblink you want to open and tap";
+                return "Place the scanner directly over the Weblink you want to open in portrait mode and tap";
             case "Call":
-                return "Place the scanner directly over the Phone Number you want to call and tap";
+                return "Place the scanner directly over the Phone Number you want to call in portrait mode and tap";
             case "Business Card":
-                return "Place the scanner directly over the Business Card you want to save and tap";
+                return "Place the scanner directly over the Business Card you want to save in portrait mode and tap";
             case "Translate":
-                return "Place the scanner directly over the text you want to Translate and tap";
-            case "Search":
-                return "Place the scanner directly over the text you want to Search and tap";
+                return "Place the scanner directly over the text you want to Translate in portrait mode and tap";
+            case "Copy":
+                return "Place the scanner directly over the text you want to Copy in portrait mode and tap";
         }
         return "";
     }
@@ -151,17 +129,18 @@ public class StaticScannerActivity extends AppCompatActivity {
         cameraPreviewLayout.addView(captureButton, getParams(Gravity.CENTER_HORIZONTAL, 0, 0, 8));
 
         ImageView galleryButton = new ImageView(this);
-        galleryButton.setImageResource(R.drawable.ic_photo_size_select_actual_white_48dp);
+        galleryButton.setImageResource(R.drawable.ic_photo_size_select_actual_white_36dp);
         cameraPreviewLayout.addView(galleryButton, getParams(Gravity.START, 8, 0, 8));
 
         final ImageView flashButton = new ImageView(this);
-        flashButton.setImageResource(R.drawable.ic_flash_off_white_48dp);
+        flashButton.setImageResource(R.drawable.ic_flash_off_white_36dp);
         cameraPreviewLayout.addView(flashButton, getParams(Gravity.END, 0, 8, 0));
 
         captureButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 try {
+                    v.playSoundEffect(SoundEffectConstants.CLICK);
                     camera.takePicture(null, null, pictureCallback);
                 } catch (Exception e) {
                     Toast.makeText(StaticScannerActivity.this, "Camera is busy", Toast.LENGTH_SHORT).show();
@@ -175,12 +154,12 @@ public class StaticScannerActivity extends AppCompatActivity {
                 Camera.Parameters params = camera.getParameters();
                 if (Camera.Parameters.FLASH_MODE_ON.equals(params.getFlashMode())) {
                     params.setFlashMode(Camera.Parameters.FLASH_MODE_OFF);
-                    flashButton.setImageResource(R.drawable.ic_flash_off_white_48dp);
+                    flashButton.setImageResource(R.drawable.ic_flash_off_white_36dp);
                     camera.setParameters(params);
                 } else {
                     params.setFlashMode(Camera.Parameters.FLASH_MODE_ON);
                     camera.setParameters(params);
-                    flashButton.setImageResource(R.drawable.ic_flash_on_white_48dp);
+                    flashButton.setImageResource(R.drawable.ic_flash_on_white_36dp);
 
                 }
 
@@ -206,14 +185,19 @@ public class StaticScannerActivity extends AppCompatActivity {
             params.setFocusMode(Camera.Parameters.FOCUS_MODE_CONTINUOUS_PICTURE);
             params.setFlashMode(Camera.Parameters.FLASH_MODE_OFF);
 
-            // TODO:Let user choose these from settings
             List<Camera.Size> sizes = params.getSupportedPictureSizes();
+            Camera.Size mSize = null;
+            for (int i = sizes.size() - 1; i >= 0; i--) {
 
-            if (!sizes.isEmpty()) {
-                Camera.Size mSize = sizes.get(sizes.size() / 2);
-                Log.i("Res", "Chosen resolution: " + mSize.width + " " + mSize.height);
+                if (sizes.get(i).width >= 1024 && sizes.get(i).height >= 768) {
+                    mSize = sizes.get(i);
+                    break;
+                }
+            }
+            if (mSize != null) {
                 params.setPictureSize(mSize.width, mSize.height);
             }
+
 
             mCamera.setParameters(params);
 
@@ -222,6 +206,47 @@ public class StaticScannerActivity extends AppCompatActivity {
             e.printStackTrace();
         }
         return mCamera;
+    }
+
+    private void callToScannerResultActivity(Bitmap bitmapToScan, boolean newImage) {
+
+        File file;
+        FileOutputStream outputStream;
+        try {
+            file = new File(getCacheDir(), "lensCache");
+            outputStream = new FileOutputStream(file);
+
+            if (newImage) {
+                ExifInterface exif = new ExifInterface(file.toString());
+                if (exif.getAttribute(ExifInterface.TAG_ORIENTATION).equalsIgnoreCase("6"))
+                    bitmapToScan = rotate(bitmapToScan, 90);
+                if (exif.getAttribute(ExifInterface.TAG_ORIENTATION).equalsIgnoreCase("8"))
+                    bitmapToScan = rotate(bitmapToScan, 270); //270
+                if (exif.getAttribute(ExifInterface.TAG_ORIENTATION).equalsIgnoreCase("3"))
+                    bitmapToScan = rotate(bitmapToScan, 180); //180
+                if (exif.getAttribute(ExifInterface.TAG_ORIENTATION).equalsIgnoreCase("0"))
+                    bitmapToScan = rotate(bitmapToScan, 90);
+            }
+
+            bitmapToScan.compress(Bitmap.CompressFormat.PNG, 100, outputStream);
+            outputStream.close();
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+
+        Intent intent = new Intent(this, ScannerResultActivity.class);
+        startActivity(intent);
+        this.finish();
+    }
+
+
+    private Bitmap rotate(Bitmap bitmap, int degree) {
+        int w = bitmap.getWidth();
+        int h = bitmap.getHeight();
+        Matrix mtx = new Matrix();
+        mtx.setRotate(degree);
+        return Bitmap.createBitmap(bitmap, 0, 0, w, h, mtx, true);
+
     }
 
     private void requestCameraPermission() {

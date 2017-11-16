@@ -24,7 +24,7 @@ public class HomeFragment extends Fragment {
         buttonsMap.put("Call", (Button) view.findViewById(R.id.button_call));
         buttonsMap.put("Business Card", (Button) view.findViewById(R.id.button_bussinesscard));
         buttonsMap.put("Translate", (Button) view.findViewById(R.id.button_translate));
-        buttonsMap.put("Search", (Button) view.findViewById(R.id.button_search));
+        buttonsMap.put("Copy", (Button) view.findViewById(R.id.button_copy));
 
         for (String type : buttonsMap.keySet()) {
             setButtonMapping(type, buttonsMap.get(type));
