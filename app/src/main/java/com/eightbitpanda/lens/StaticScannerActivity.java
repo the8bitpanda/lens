@@ -38,6 +38,7 @@ import java.util.List;
 public class StaticScannerActivity extends AppCompatActivity {
 
     private static final int RC_HANDLE_CAMERA_PERM = 2;
+    String type;
     PictureCallback pictureCallback = new PictureCallback() {
         @Override
         public void onPictureTaken(byte[] data, Camera camera) {
@@ -50,7 +51,6 @@ public class StaticScannerActivity extends AppCompatActivity {
     };
     private Camera camera;
     private FrameLayout cameraPreviewLayout;
-    private TextView helpText;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -62,46 +62,31 @@ public class StaticScannerActivity extends AppCompatActivity {
 
         Bundle extras = getIntent().getExtras();
         assert extras != null;
-        String type = extras.getString("Type");
-        setActionBarTitle(getActionBarTitle(type));
-        helpText = (TextView) findViewById(R.id.help_text);
-        setHelpText(getHelpText(type), helpText);
+        type = extras.getString("Type");
+        setActionBarTitle();
+        TextView helpText = (TextView) findViewById(R.id.help_text);
+        setHelpText(getHelpText(), helpText);
 
 
         int rc = ActivityCompat.checkSelfPermission(this, Manifest.permission.CAMERA);
         if (rc == PackageManager.PERMISSION_GRANTED) {
             setUpCamera();
         } else {
-            requestCameraPermission();
+            requestCameraPermission(helpText);
         }
 
 
     }
 
-    private String getActionBarTitle(String type) {
-        switch (type) {
-            case "Weblink":
-                return "Looking for Weblinks";
-            case "Call":
-                return "Looking for Phone Numbers";
-            case "Business Card":
-                return "Scanning Business Card";
-            case "Translate":
-                return "Translate";
-            case "Copy":
-                return "Looking for text to copy";
-        }
-        return "";
-    }
 
-    private void setActionBarTitle(String title) {
+    private void setActionBarTitle() {
         if (getActionBar() != null)
-            getActionBar().setTitle(title);
+            getActionBar().setTitle("Oh Snap");
         if (getSupportActionBar() != null)
-            getSupportActionBar().setTitle(title);
+            getSupportActionBar().setTitle("Oh Snap");
     }
 
-    private String getHelpText(String type) {
+    private String getHelpText() {
         switch (type) {
             case "Weblink":
                 return "Place the scanner directly over the Weblink you want to open in portrait mode and tap";
@@ -241,6 +226,7 @@ public class StaticScannerActivity extends AppCompatActivity {
         }
 
         Intent intent = new Intent(this, ScannerResultActivity.class);
+        intent.putExtra("Type", type);
         startActivity(intent);
         this.finish();
     }
@@ -255,7 +241,7 @@ public class StaticScannerActivity extends AppCompatActivity {
 
     }
 
-    private void requestCameraPermission() {
+    private void requestCameraPermission(TextView helpText) {
 
         final String[] permissions = new String[]{Manifest.permission.CAMERA};
 

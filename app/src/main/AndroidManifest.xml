@@ -28,7 +28,10 @@
             </intent-filter>
         </activity>
         <activity android:name=".StaticScannerActivity" />
-        <activity android:name=".ScannerResultActivity"></activity>
+        <activity
+            android:name=".ScannerResultActivity"
+            android:theme="@style/Theme.AppCompat.NoActionBar" />
     </application>
+
 
 </manifest>
