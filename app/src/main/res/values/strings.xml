@@ -6,7 +6,7 @@
     <string name="home_weblink">Scan a Web Link and open it from the mobile browser</string>
     <string name="home_call">Scan a Phone Number and call it directly</string>
     <string name="home_businesscard">Scan a Business Card and save it in your contacts</string>
-    <string name="home_search">Scan a word and Search it on the web</string>
+    <string name="home_copy">Scan a word and Copy it to the clipboard</string>
     <string name="home_translate">Scan text in any language and Translate it to yours</string>
     <string name="ok">OK</string>
     <string name="permission_camera_rationale">Access to the camera is needed for detection</string>
@@ -21,5 +21,8 @@
     <string name="ocr_failure">No text captured</string>
     <string name="ocr_error">"Error reading text: %1$s"</string>
     <string name="title_activity_static_scanner">StaticScannerActivity</string>
+
+    <!-- TODO: Remove or change this placeholder text -->
+    <string name="hello_blank_fragment">Hello blank fragment</string>
 
 </resources>
