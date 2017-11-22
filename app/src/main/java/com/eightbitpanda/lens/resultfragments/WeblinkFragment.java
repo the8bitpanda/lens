@@ -90,6 +90,7 @@ public class WeblinkFragment extends Fragment {
 
         if (weblinksCleanList.size() == 0) {
             weblink[0] = null;
+            progressDialog.dismiss();
             Toast.makeText(getActivity(), "No Weblinks found", Toast.LENGTH_SHORT).show();
             getActivity().finish();
             Intent scannerActivity = new Intent(getActivity(), StaticScannerActivity.class);
