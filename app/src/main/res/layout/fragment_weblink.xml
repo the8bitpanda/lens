@@ -1,4 +1,5 @@
-<ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
@@ -6,44 +7,59 @@
     android:orientation="vertical"
     tools:context="com.eightbitpanda.lens.resultfragments.WeblinkFragment">
 
-
-    <!--  <TextView
-          android:layout_width="match_parent"
-          android:layout_height="0dp"
-          android:layout_weight="1"
-          android:gravity="center_horizontal|bottom"
-          android:padding="8dp"
-          android:text="Opening https://www.google.com/images/ix34fs32d-ff.jpg in"
-          android:textColor="@color/colorWhite"
-          android:textSize="24sp"
-          android:textStyle="bold" /> -->
-
-    <TextView
-        android:id="@+id/textView"
+    <RelativeLayout
+        android:id="@+id/weblink_parent"
         android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:gravity="center_horizontal|top"
-        android:textColor="@color/colorWhite"
-        android:textSize="15sp"
-        android:textStyle="bold" />
-    <!--
+        android:layout_height="match_parent"
+        android:visibility="gone">
+
+        <TextView
+            android:id="@+id/weblink_countdown"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_centerInParent="true"
+            android:gravity="center"
+            android:textColor="@color/colorWhite"
+            android:textSize="72sp"
+            android:textStyle="bold" />
+
+        <TextView
+            android:id="@+id/weblink_message"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_above="@id/weblink_countdown"
+            android:layout_centerHorizontal="true"
+            android:gravity="center"
+            android:padding="4dp"
+            android:textColor="@color/colorWhite"
+            android:textSize="24sp" />
+
         <LinearLayout
-            android:layout_width="match_parent"
-            android:layout_height="0dp"
-            android:layout_weight="1"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_below="@+id/weblink_countdown"
+            android:layout_centerHorizontal="true"
+            android:layout_margin="16dp"
             android:gravity="center"
             android:orientation="horizontal">
 
-            <Button
+            <android.support.design.widget.FloatingActionButton
+                android:id="@+id/weblink_retry"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:text="Retry" />
+                android:layout_margin="8dp"
+                app:fabSize="normal"
+                app:srcCompat="@drawable/ic_redo_black_36dp" />
 
-
-            <Button
+            <android.support.design.widget.FloatingActionButton
+                android:id="@+id/weblink_share"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:text="Share" />
-        </LinearLayout> -->
+                android:layout_margin="8dp"
+                app:fabSize="normal"
+                app:srcCompat="@drawable/ic_share_black_36dp" />
 
-</ScrollView>
+        </LinearLayout>
+    </RelativeLayout>
+
+</RelativeLayout>
