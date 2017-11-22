@@ -114,6 +114,8 @@ public class WeblinkFragment extends Fragment {
             });
 
             AlertDialog dialog = builder.create();
+            dialog.setCancelable(false);
+            dialog.setCanceledOnTouchOutside(false);
             dialog.show();
         }
 
@@ -152,6 +154,7 @@ public class WeblinkFragment extends Fragment {
 
             public void onFinish() {
                 getActivity().finish();
+                //Save history using helper
                 openWeblink(weblink);
             }
         }.start();

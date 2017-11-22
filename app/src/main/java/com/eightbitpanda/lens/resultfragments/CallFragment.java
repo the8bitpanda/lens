@@ -115,6 +115,8 @@ public class CallFragment extends Fragment {
             });
 
             AlertDialog dialog = builder.create();
+            dialog.setCancelable(false);
+            dialog.setCanceledOnTouchOutside(false);
             dialog.show();
         }
 
