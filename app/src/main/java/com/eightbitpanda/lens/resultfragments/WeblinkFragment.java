@@ -102,7 +102,7 @@ public class WeblinkFragment extends Fragment {
             setView(view, weblink[0]);
         } else if (weblinksCleanList.size() > 1) {
             AlertDialog.Builder builder = new AlertDialog.Builder(getActivity());
-            builder.setTitle("Multiple links found");
+            builder.setTitle("Multiple Weblinks found");
             final String[] links = getArray(weblinksCleanList);
             builder.setItems(links, new DialogInterface.OnClickListener() {
                 @Override

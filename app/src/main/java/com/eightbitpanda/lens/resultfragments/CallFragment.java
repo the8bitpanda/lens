@@ -103,12 +103,12 @@ public class CallFragment extends Fragment {
             setView(view, number[0]);
         } else if (numbersCleanList.size() > 1) {
             AlertDialog.Builder builder = new AlertDialog.Builder(getActivity());
-            builder.setTitle("Multiple links found");
-            final String[] links = getArray(numbersCleanList);
-            builder.setItems(links, new DialogInterface.OnClickListener() {
+            builder.setTitle("Multiple Phone Numbers found");
+            final String[] numbers = getArray(numbersCleanList);
+            builder.setItems(numbers, new DialogInterface.OnClickListener() {
                 @Override
                 public void onClick(DialogInterface dialog, int which) {
-                    number[0] = links[which];
+                    number[0] = numbers[which];
                     progressDialog.dismiss();
                     setView(view, number[0]);
                 }
