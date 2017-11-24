@@ -113,9 +113,19 @@ public class WeblinkFragment extends Fragment {
                 }
             });
 
+
             AlertDialog dialog = builder.create();
             dialog.setCancelable(false);
             dialog.setCanceledOnTouchOutside(false);
+            dialog.setButton(DialogInterface.BUTTON_NEUTRAL, "Retry", new DialogInterface.OnClickListener() {
+                @Override
+                public void onClick(DialogInterface dialogInterface, int i) {
+                    getActivity().finish();
+                    Intent scannerActivity = new Intent(getActivity(), StaticScannerActivity.class);
+                    scannerActivity.putExtra("Type", "Weblink");
+                    startActivity(scannerActivity);
+                }
+            });
             dialog.show();
         }
 
@@ -130,12 +140,6 @@ public class WeblinkFragment extends Fragment {
         return returnArray;
     }
 
-    private void openWeblink(String weblink) {
-        if (!weblink.startsWith("http://") && !weblink.startsWith("https://"))
-            weblink = "http://" + weblink;
-        Intent browserIntent = new Intent(Intent.ACTION_VIEW, Uri.parse(weblink));
-        startActivity(browserIntent);
-    }
 
     public void setView(View view, final String weblink) {
         RelativeLayout weblinkParent = view.findViewById(R.id.weblink_parent);
@@ -183,6 +187,13 @@ public class WeblinkFragment extends Fragment {
         });
 
 
+    }
+
+    private void openWeblink(String weblink) {
+        if (!weblink.startsWith("http://") && !weblink.startsWith("https://"))
+            weblink = "http://" + weblink;
+        Intent browserIntent = new Intent(Intent.ACTION_VIEW, Uri.parse(weblink));
+        startActivity(browserIntent);
     }
 
     @Override

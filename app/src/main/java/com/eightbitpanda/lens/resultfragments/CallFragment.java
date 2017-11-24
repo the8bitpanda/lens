@@ -1,15 +1,18 @@
 package com.eightbitpanda.lens.resultfragments;
 
+import android.Manifest;
 import android.app.AlertDialog;
 import android.app.Fragment;
 import android.app.ProgressDialog;
 import android.content.DialogInterface;
 import android.content.Intent;
+import android.content.pm.PackageManager;
 import android.graphics.Bitmap;
 import android.net.Uri;
 import android.os.Bundle;
 import android.os.CountDownTimer;
 import android.support.design.widget.FloatingActionButton;
+import android.support.v4.app.ActivityCompat;
 import android.util.Patterns;
 import android.util.SparseArray;
 import android.view.LayoutInflater;
@@ -33,6 +36,7 @@ public class CallFragment extends Fragment {
 
 
     ProgressDialog progressDialog;
+    String numberToCall;
     private CountDownTimer countDownTimer;
 
     @Override
@@ -62,15 +66,15 @@ public class CallFragment extends Fragment {
         HashSet<String> numbersRaw = new HashSet<>();
         for (int i = 0; i < textBlocks.size(); i++) {
             TextBlock block = textBlocks.valueAt(i);
-            if (isUrl(block.getValue())) {
+            if (isNumber(block.getValue())) {
                 numbersRaw.add(block.getValue());
             }
             for (Text line : block.getComponents()) {
-                if (isUrl(line.getValue())) {
+                if (isNumber(line.getValue())) {
                     numbersRaw.add(line.getValue());
                 }
                 for (Text word : line.getComponents()) {
-                    if (isUrl(word.getValue())) {
+                    if (isNumber(word.getValue())) {
                         numbersRaw.add(word.getValue());
                     }
                 }
@@ -80,7 +84,7 @@ public class CallFragment extends Fragment {
         return numbersRaw;
     }
 
-    private boolean isUrl(String value) {
+    private boolean isNumber(String value) {
         return Patterns.PHONE.matcher(value).matches();
     }
 
@@ -103,7 +107,17 @@ public class CallFragment extends Fragment {
             setView(view, number[0]);
         } else if (numbersCleanList.size() > 1) {
             AlertDialog.Builder builder = new AlertDialog.Builder(getActivity());
-            builder.setTitle("Multiple Phone Numbers found");
+            builder.setTitle("Multiple Phone Numbers found")
+                    .setPositiveButton("Retry", new DialogInterface.OnClickListener() {
+                        @Override
+                        public void onClick(DialogInterface dialogInterface, int i) {
+                            getActivity().finish();
+                            Intent scannerActivity = new Intent(getActivity(), StaticScannerActivity.class);
+                            scannerActivity.putExtra("Type", "Call");
+                            startActivity(scannerActivity);
+                        }
+                    });
+            ;
             final String[] numbers = getArray(numbersCleanList);
             builder.setItems(numbers, new DialogInterface.OnClickListener() {
                 @Override
@@ -114,9 +128,11 @@ public class CallFragment extends Fragment {
                 }
             });
 
+
             AlertDialog dialog = builder.create();
             dialog.setCancelable(false);
             dialog.setCanceledOnTouchOutside(false);
+
             dialog.show();
         }
 
@@ -131,12 +147,6 @@ public class CallFragment extends Fragment {
         return returnArray;
     }
 
-    private void callNumber(String number) {
-
-        Intent intent = new Intent(Intent.ACTION_DIAL);
-        intent.setData(Uri.parse("tel:" + number));
-        startActivity(intent);
-    }
 
     public void setView(View view, final String number) {
         RelativeLayout callParent = view.findViewById(R.id.call_parent);
@@ -184,6 +194,24 @@ public class CallFragment extends Fragment {
 
 
     }
+
+    private void callNumber(String number) {
+
+        numberToCall = number;
+        int rc = ActivityCompat.checkSelfPermission(getActivity(), Manifest.permission.CALL_PHONE);
+        if (rc == PackageManager.PERMISSION_GRANTED) {
+            Intent intent = new Intent(Intent.ACTION_CALL);
+            intent.setData(Uri.parse("tel:" + numberToCall));
+            startActivity(intent);
+        } else {
+            Intent intent = new Intent(Intent.ACTION_DIAL);
+            intent.setData(Uri.parse("tel:" + numberToCall));
+            startActivity(intent);
+        }
+
+
+    }
+
 
     @Override
     public void onResume() {

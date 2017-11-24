@@ -20,36 +20,37 @@
             android:layout_weight="1"
             android:orientation="horizontal">
 
-
             <Button
-                android:id="@+id/button_weblink"
-                style="@style/Widget.AppCompat.Button.Colored"
-                android:layout_width="0dp"
-                android:layout_height="match_parent"
-                android:layout_marginEnd="1dp"
-                android:layout_marginRight="1dp"
-                android:layout_weight="1"
-                android:drawableTop="@drawable/ic_public_white_72dp"
-                android:text="@string/home_weblink"
-                android:textAllCaps="false"
-                android:textColor="@color/colorWhite"
-                android:textSize="12sp"
-                android:theme="@style/CustomButtons.Red" />
-
-            <Button
-                android:id="@+id/button_call"
+                android:id="@+id/button_copy"
                 style="@style/Widget.AppCompat.Button.Colored"
                 android:layout_width="0dp"
                 android:layout_height="match_parent"
                 android:layout_marginLeft="1dp"
                 android:layout_marginStart="1dp"
                 android:layout_weight="1"
-                android:drawableTop="@drawable/ic_call_white_72dp"
-                android:text="@string/home_call"
+                android:drawableTop="@drawable/ic_content_copy_white_72dp"
+                android:text="@string/home_copy"
                 android:textAllCaps="false"
                 android:textColor="@color/colorWhite"
                 android:textSize="12sp"
-                android:theme="@style/CustomButtons.Blue" />
+                android:theme="@style/CustomButtons.Green" />
+
+            <Button
+                android:id="@+id/button_translate"
+                style="@style/Widget.AppCompat.Button.Colored"
+                android:layout_width="0dp"
+                android:layout_height="match_parent"
+                android:layout_marginEnd="1dp"
+                android:layout_marginRight="1dp"
+                android:layout_weight="1"
+                android:drawableTop="@drawable/ic_g_translate_white_72dp"
+                android:text="@string/home_translate"
+                android:textAllCaps="false"
+                android:textColor="@color/colorWhite"
+                android:textSize="12sp"
+                android:theme="@style/CustomButtons.Yellow" />
+
+
         </LinearLayout>
 
 
@@ -87,34 +88,34 @@
             android:layout_weight="1">
 
             <Button
-                android:id="@+id/button_translate"
+                android:id="@+id/button_weblink"
                 style="@style/Widget.AppCompat.Button.Colored"
                 android:layout_width="0dp"
                 android:layout_height="match_parent"
                 android:layout_marginEnd="1dp"
                 android:layout_marginRight="1dp"
                 android:layout_weight="1"
-                android:drawableTop="@drawable/ic_g_translate_white_72dp"
-                android:text="@string/home_translate"
+                android:drawableTop="@drawable/ic_public_white_72dp"
+                android:text="@string/home_weblink"
                 android:textAllCaps="false"
                 android:textColor="@color/colorWhite"
                 android:textSize="12sp"
-                android:theme="@style/CustomButtons.Green" />
+                android:theme="@style/CustomButtons.Red" />
 
             <Button
-                android:id="@+id/button_copy"
+                android:id="@+id/button_call"
                 style="@style/Widget.AppCompat.Button.Colored"
                 android:layout_width="0dp"
                 android:layout_height="match_parent"
                 android:layout_marginLeft="1dp"
                 android:layout_marginStart="1dp"
                 android:layout_weight="1"
-                android:drawableTop="@drawable/ic_content_copy_white_72dp"
-                android:text="@string/home_copy"
+                android:drawableTop="@drawable/ic_call_white_72dp"
+                android:text="@string/home_call"
                 android:textAllCaps="false"
                 android:textColor="@color/colorWhite"
                 android:textSize="12sp"
-                android:theme="@style/CustomButtons.Yellow" />
+                android:theme="@style/CustomButtons.Blue" />
 
 
         </LinearLayout>

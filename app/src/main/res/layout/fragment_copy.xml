@@ -1,9 +1,58 @@
-<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:background="@color/colorYellow"
+    android:background="@color/colorGreen"
+    android:orientation="vertical"
     tools:context="com.eightbitpanda.lens.resultfragments.CopyFragment">
 
 
-</FrameLayout>
+    <RelativeLayout
+        android:id="@+id/copy_parent"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:visibility="gone">
+
+
+        <TextView
+            android:id="@+id/copy_message"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:autoLink="all"
+            android:gravity="center"
+            android:padding="4dp"
+            android:textColor="@color/colorWhite"
+            android:textIsSelectable="true"
+            android:textSize="14sp" />
+
+
+        <LinearLayout
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_below="@+id/copy_message"
+            android:layout_centerHorizontal="true"
+            android:layout_margin="16dp"
+            android:gravity="center"
+            android:orientation="horizontal">
+
+            <android.support.design.widget.FloatingActionButton
+                android:id="@+id/copy_retry"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_margin="8dp"
+                app:fabSize="normal"
+                app:srcCompat="@drawable/ic_redo_black_36dp" />
+
+            <android.support.design.widget.FloatingActionButton
+                android:id="@+id/copy_share"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_margin="8dp"
+                app:fabSize="normal"
+                app:srcCompat="@drawable/ic_share_black_36dp" />
+
+        </LinearLayout>
+    </RelativeLayout>
+
+</ScrollView>
