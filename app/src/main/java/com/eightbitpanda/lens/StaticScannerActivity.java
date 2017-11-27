@@ -13,7 +13,9 @@ import android.graphics.Matrix;
 import android.hardware.Camera;
 import android.hardware.Camera.PictureCallback;
 import android.media.ExifInterface;
+import android.net.Uri;
 import android.os.Bundle;
+import android.provider.MediaStore;
 import android.support.annotation.NonNull;
 import android.support.design.widget.Snackbar;
 import android.support.v4.app.ActivityCompat;
@@ -37,7 +39,7 @@ import java.util.List;
 
 public class StaticScannerActivity extends AppCompatActivity {
 
-    private static final int RC_HANDLE_CAMERA_PERM = 2;
+    private static final int RC_HANDLE_CAMERA_PERM = 2, RC_HANDLE_GALLERY_PERM = 3, RC_GALLERY_IMAGE = 4;
     String type;
     PictureCallback pictureCallback = new PictureCallback() {
         @Override
@@ -64,6 +66,7 @@ public class StaticScannerActivity extends AppCompatActivity {
         assert extras != null;
         type = extras.getString("Type");
         setActionBarTitle();
+
         TextView helpText = (TextView) findViewById(R.id.help_text);
         setHelpText(getHelpText(), helpText);
 
@@ -77,7 +80,6 @@ public class StaticScannerActivity extends AppCompatActivity {
 
 
     }
-
 
     private void setActionBarTitle() {
         if (getActionBar() != null)
@@ -113,16 +115,27 @@ public class StaticScannerActivity extends AppCompatActivity {
 
         final ImageView captureButton = new ImageView(this);
         captureButton.setImageResource(R.drawable.ic_camera_white_72dp);
-        cameraPreviewLayout.addView(captureButton, getParams(Gravity.CENTER_HORIZONTAL, 0, 0, 8));
+        cameraPreviewLayout.addView(captureButton, getParams(Gravity.CENTER_HORIZONTAL, 0, 0, 16));
 
         ImageView galleryButton = new ImageView(this);
         galleryButton.setImageResource(R.drawable.ic_photo_size_select_actual_white_36dp);
-        cameraPreviewLayout.addView(galleryButton, getParams(Gravity.START, 8, 0, 8));
+        cameraPreviewLayout.addView(galleryButton, getParams(Gravity.START, 32, 0, 16));
 
         final ImageView flashButton = new ImageView(this);
         flashButton.setImageResource(R.drawable.ic_flash_off_white_36dp);
-        cameraPreviewLayout.addView(flashButton, getParams(Gravity.END, 0, 8, 0));
+        cameraPreviewLayout.addView(flashButton, getParams(Gravity.END, 0, 32, 16));
 
+        galleryButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                int perm = ActivityCompat.checkSelfPermission(StaticScannerActivity.this, Manifest.permission.READ_EXTERNAL_STORAGE);
+                if (perm == PackageManager.PERMISSION_GRANTED) {
+                    openGallery();
+                } else {
+                    requestGalleryPermission();
+                }
+            }
+        });
         captureButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -158,15 +171,6 @@ public class StaticScannerActivity extends AppCompatActivity {
         });
     }
 
-    private FrameLayout.LayoutParams getParams(int gravity, int lM, int rM, int bM) {
-        FrameLayout.LayoutParams lp = new FrameLayout.LayoutParams(
-                FrameLayout.LayoutParams.WRAP_CONTENT,
-                FrameLayout.LayoutParams.WRAP_CONTENT,
-                Gravity.BOTTOM | gravity);
-        lp.setMargins(lM, 0, rM, bM);
-        return lp;
-    }
-
     private Camera getCamera() {
         Camera mCamera = null;
         try {
@@ -199,8 +203,38 @@ public class StaticScannerActivity extends AppCompatActivity {
         return mCamera;
     }
 
-    private void callToScannerResultActivity(Bitmap bitmapToScan, boolean newImage) {
+    private FrameLayout.LayoutParams getParams(int gravity, int lM, int rM, int bM) {
+        FrameLayout.LayoutParams lp = new FrameLayout.LayoutParams(
+                FrameLayout.LayoutParams.WRAP_CONTENT,
+                FrameLayout.LayoutParams.WRAP_CONTENT,
+                Gravity.BOTTOM | gravity);
+        lp.setMargins(lM, 0, rM, bM);
+        return lp;
+    }
 
+    private void openGallery() {
+        Intent intent = new Intent();
+        intent.setType("image/*");
+        intent.setAction(Intent.ACTION_GET_CONTENT);
+        startActivityForResult(Intent.createChooser(intent, "Select Picture"), RC_GALLERY_IMAGE);
+    }
+
+    @Override
+    protected void onActivityResult(int requestCode, int resultCode, Intent data) {
+        super.onActivityResult(requestCode, resultCode, data);
+
+        if (requestCode == RC_GALLERY_IMAGE && resultCode == RESULT_OK && data != null && data.getData() != null) {
+            Uri uri = data.getData();
+            try {
+                Bitmap bitmap = MediaStore.Images.Media.getBitmap(getContentResolver(), uri);
+                callToScannerResultActivity(bitmap, false);
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+        }
+    }
+
+    private void callToScannerResultActivity(Bitmap bitmapToScan, boolean newImage) {
         File file;
         FileOutputStream outputStream;
         try {
@@ -230,7 +264,6 @@ public class StaticScannerActivity extends AppCompatActivity {
         startActivity(intent);
         this.finish();
     }
-
 
     private Bitmap rotate(Bitmap bitmap, int degree) {
         int w = bitmap.getWidth();
@@ -267,38 +300,46 @@ public class StaticScannerActivity extends AppCompatActivity {
                 .show();
     }
 
+    private void requestGalleryPermission() {
+
+        final String[] permissions = new String[]{Manifest.permission.READ_EXTERNAL_STORAGE};
+        ActivityCompat.requestPermissions(this, permissions, RC_HANDLE_GALLERY_PERM);
+
+    }
+
     @Override
     public void onRequestPermissionsResult(int requestCode,
                                            @NonNull String[] permissions,
                                            @NonNull int[] grantResults) {
-        if (requestCode != RC_HANDLE_CAMERA_PERM) {
-            super.onRequestPermissionsResult(requestCode, permissions, grantResults);
-            return;
-        }
 
-        if (grantResults.length != 0 && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
-            // We have permission, so create the camerasource
-            setUpCamera();
-            return;
-        }
+        if (requestCode == RC_HANDLE_CAMERA_PERM) {
 
-
-        DialogInterface.OnClickListener listener = new DialogInterface.OnClickListener() {
-            public void onClick(DialogInterface dialog, int id) {
-                finish();
+            if (grantResults.length != 0 && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
+                // We have permission, so create the camerasource
+                setUpCamera();
+                return;
             }
-        };
+            DialogInterface.OnClickListener listener = new DialogInterface.OnClickListener() {
+                public void onClick(DialogInterface dialog, int id) {
+                    finish();
+                }
+            };
 
-        AlertDialog.Builder builder = new AlertDialog.Builder(this);
-        builder.setTitle("Lens")
-                .setMessage(R.string.no_camera_permission)
-                .setPositiveButton(R.string.ok, listener)
-                .show();
-    }
+            AlertDialog.Builder builder = new AlertDialog.Builder(this);
+            builder.setTitle("Lens")
+                    .setMessage(R.string.no_camera_permission)
+                    .setPositiveButton(R.string.ok, listener)
+                    .show();
 
-    @Override
-    protected void onPause() {
-        super.onPause();
-        this.finish();
+        } else if (requestCode == RC_HANDLE_GALLERY_PERM) {
+            if (grantResults.length != 0 && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
+                openGallery();
+            } else {
+                Toast.makeText(this, "Need permission to access gallery", Toast.LENGTH_SHORT).show();
+            }
+        } else {
+            super.onRequestPermissionsResult(requestCode, permissions, grantResults);
+        }
     }
+    
 }

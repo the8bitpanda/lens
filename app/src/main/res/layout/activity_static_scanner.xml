@@ -23,9 +23,7 @@
         android:layout_height="0dp"
         android:layout_weight="1"
         android:gravity="center"
-        android:padding="10dp"
-        android:text="Place the scanner directly over the Weblink you want to open" />
-
+        android:padding="10dp" />
 </LinearLayout>
 
 

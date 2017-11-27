@@ -59,15 +59,6 @@ public class CopyFragment extends Fragment {
         for (int i = 0; i < textBlocks.size(); i++) {
             TextBlock block = textBlocks.valueAt(i);
             textRaw.add(block.getValue());
-
-            /*for (Text line : block.getComponents()) {
-                textRaw.add(line.getValue());
-
-                for (Text word : line.getComponents()) {
-                    textRaw.add(word.getValue());
-
-                }
-            }*/
         }
 
         return textRaw;
@@ -96,22 +87,18 @@ public class CopyFragment extends Fragment {
     public void setView(View view, final ArrayList<String> textCleanList) {
         String text = "";
         for (String t : textCleanList)
-            text = text + "\n\n" + t;
+            text = text + "\n---\n" + t.trim();
 
         final ClipboardManager clipboardManager = (ClipboardManager) getActivity().getSystemService(Context.CLIPBOARD_SERVICE);
         ClipData clipData = ClipData.newPlainText("lens", text);
-        if (clipboardManager != null) {
+        if (clipboardManager != null)
             clipboardManager.setPrimaryClip(clipData);
-            Toast.makeText(getActivity(), "All scanned text is copied to clipboard. You can select parts of text here", Toast.LENGTH_LONG).show();
-        } else
-            Toast.makeText(getActivity(), "You can select parts of text here", Toast.LENGTH_LONG).show();
 
 
         RelativeLayout copyParent = view.findViewById(R.id.copy_parent);
         TextView copyMessage = view.findViewById(R.id.copy_message);
         FloatingActionButton retryButton = view.findViewById(R.id.copy_retry);
         FloatingActionButton shareButton = view.findViewById(R.id.copy_share);
-        FloatingActionButton searchButton = view.findViewById(R.id.copy_search);
         copyParent.setVisibility(View.VISIBLE);
         copyMessage.setText(text);
 
