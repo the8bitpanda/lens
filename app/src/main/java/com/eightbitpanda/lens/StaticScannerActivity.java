@@ -22,7 +22,6 @@ import android.support.design.widget.Snackbar;
 import android.support.v4.app.ActivityCompat;
 import android.support.v7.app.AppCompatActivity;
 import android.view.Gravity;
-import android.view.SoundEffectConstants;
 import android.view.View;
 import android.view.animation.Animation;
 import android.view.animation.AnimationUtils;
@@ -144,7 +143,8 @@ public class StaticScannerActivity extends AppCompatActivity {
             @Override
             public void onClick(View v) {
                 try {
-                    v.playSoundEffect(SoundEffectConstants.CLICK);
+                    Toast.makeText(StaticScannerActivity.this, "Scanning", Toast.LENGTH_SHORT).show();
+                    v.playSoundEffect(android.view.SoundEffectConstants.CLICK);
                     Animation rotation = AnimationUtils.loadAnimation(v.getContext(), R.anim.rotate);
                     rotation.setFillAfter(true);
                     captureButton.startAnimation(rotation);
@@ -153,6 +153,7 @@ public class StaticScannerActivity extends AppCompatActivity {
                 } catch (Exception e) {
                     Toast.makeText(StaticScannerActivity.this, "Camera is busy", Toast.LENGTH_SHORT).show();
                 }
+
             }
         });
 
@@ -354,4 +355,9 @@ public class StaticScannerActivity extends AppCompatActivity {
         }
     }
 
+    @Override
+    protected void onResume() {
+        super.onResume();
+        setUpCamera();
+    }
 }

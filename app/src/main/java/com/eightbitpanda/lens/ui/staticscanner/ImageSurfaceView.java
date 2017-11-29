@@ -5,8 +5,6 @@ import android.hardware.Camera;
 import android.view.SurfaceHolder;
 import android.view.SurfaceView;
 
-import java.io.IOException;
-
 public class ImageSurfaceView extends SurfaceView implements SurfaceHolder.Callback {
 
     private Camera camera;
@@ -24,7 +22,7 @@ public class ImageSurfaceView extends SurfaceView implements SurfaceHolder.Callb
         try {
             this.camera.setPreviewDisplay(holder);
             this.camera.startPreview();
-        } catch (IOException e) {
+        } catch (Exception e) {
             e.printStackTrace();
         }
     }
@@ -36,7 +34,11 @@ public class ImageSurfaceView extends SurfaceView implements SurfaceHolder.Callb
 
     @Override
     public void surfaceDestroyed(SurfaceHolder holder) {
-        this.camera.stopPreview();
-        this.camera.release();
+        try {
+            this.camera.stopPreview();
+            this.camera.release();
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
     }
 }
