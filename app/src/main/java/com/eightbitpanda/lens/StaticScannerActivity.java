@@ -3,6 +3,7 @@ package com.eightbitpanda.lens;
 import android.Manifest;
 import android.app.Activity;
 import android.app.AlertDialog;
+import android.app.ProgressDialog;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.pm.ActivityInfo;
@@ -41,12 +42,14 @@ public class StaticScannerActivity extends AppCompatActivity {
 
     private static final int RC_HANDLE_CAMERA_PERM = 2, RC_HANDLE_GALLERY_PERM = 3, RC_GALLERY_IMAGE = 4;
     String type;
+    private ProgressDialog progressDialog;
     PictureCallback pictureCallback = new PictureCallback() {
         @Override
         public void onPictureTaken(byte[] data, Camera camera) {
             Bitmap bitmap = BitmapFactory.decodeByteArray(data, 0, data.length);
             if (bitmap != null) {
                 //Call Result Activity and pass the bitmap to scan it there
+
                 callToScannerResultActivity(bitmap, true);
             }
         }
@@ -61,6 +64,7 @@ public class StaticScannerActivity extends AppCompatActivity {
         setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_PORTRAIT);
 
         cameraPreviewLayout = (FrameLayout) findViewById(R.id.camera_preview);
+        progressDialog = new ProgressDialog(this);
 
         Bundle extras = getIntent().getExtras();
         assert extras != null;
@@ -91,15 +95,15 @@ public class StaticScannerActivity extends AppCompatActivity {
     private String getHelpText() {
         switch (type) {
             case "Weblink":
-                return "Place the scanner directly over the Weblink you want to open in portrait mode and tap";
+                return "Place the scanner directly over the Weblink you want to open in portrait mode and tap the scan button";
             case "Call":
-                return "Place the scanner directly over the Phone Number you want to call in portrait mode and tap";
+                return "Place the scanner directly over the Phone Number you want to call in portrait mode and tap the scan button";
             case "Business Card":
-                return "Place the scanner directly over the Business Card you want to save in portrait mode and tap";
+                return "Place the scanner directly over the Business Card you want to save in portrait mode and tap the scan button";
             case "Translate":
-                return "Place the scanner directly over the text you want to Translate in portrait mode and tap";
+                return "Place the scanner directly over the text you want to Translate in portrait mode and tap the scan button";
             case "Copy":
-                return "Place the scanner directly over the text you want to Copy in portrait mode and tap";
+                return "Place the scanner directly over the text you want to Copy in portrait mode and tap the scan button";
         }
         return "";
     }
@@ -235,6 +239,12 @@ public class StaticScannerActivity extends AppCompatActivity {
     }
 
     private void callToScannerResultActivity(Bitmap bitmapToScan, boolean newImage) {
+        if (progressDialog != null) {
+            progressDialog.setMessage("Preparing");
+            progressDialog.setCancelable(false);
+            progressDialog.setCanceledOnTouchOutside(false);
+            progressDialog.show();
+        }
         File file;
         FileOutputStream outputStream;
         try {
@@ -259,6 +269,8 @@ public class StaticScannerActivity extends AppCompatActivity {
             e.printStackTrace();
         }
 
+        if (progressDialog != null)
+            progressDialog.dismiss();
         Intent intent = new Intent(this, ScannerResultActivity.class);
         intent.putExtra("Type", type);
         startActivity(intent);
@@ -341,5 +353,5 @@ public class StaticScannerActivity extends AppCompatActivity {
             super.onRequestPermissionsResult(requestCode, permissions, grantResults);
         }
     }
-    
+
 }

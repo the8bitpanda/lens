@@ -30,7 +30,9 @@
             </intent-filter>
         </activity>
         <activity android:name=".StaticScannerActivity" />
-        <activity android:name=".ScannerResultActivity" />
+        <activity
+            android:name=".ScannerResultActivity"
+            android:theme="@style/AppTheme.NoActionBar" />
     </application>
 
 

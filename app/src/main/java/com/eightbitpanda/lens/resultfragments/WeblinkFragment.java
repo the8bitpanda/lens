@@ -117,15 +117,6 @@ public class WeblinkFragment extends Fragment {
             AlertDialog dialog = builder.create();
             dialog.setCancelable(false);
             dialog.setCanceledOnTouchOutside(false);
-            dialog.setButton(DialogInterface.BUTTON_NEUTRAL, "Retry", new DialogInterface.OnClickListener() {
-                @Override
-                public void onClick(DialogInterface dialogInterface, int i) {
-                    getActivity().finish();
-                    Intent scannerActivity = new Intent(getActivity(), StaticScannerActivity.class);
-                    scannerActivity.putExtra("Type", "Weblink");
-                    startActivity(scannerActivity);
-                }
-            });
             dialog.show();
         }
 

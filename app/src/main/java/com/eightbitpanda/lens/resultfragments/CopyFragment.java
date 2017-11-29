@@ -2,6 +2,7 @@ package com.eightbitpanda.lens.resultfragments;
 
 import android.app.Fragment;
 import android.app.ProgressDialog;
+import android.app.SearchManager;
 import android.content.ClipData;
 import android.content.ClipboardManager;
 import android.content.Context;
@@ -13,7 +14,7 @@ import android.util.SparseArray;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.RelativeLayout;
+import android.widget.LinearLayout;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -87,7 +88,7 @@ public class CopyFragment extends Fragment {
     public void setView(View view, final ArrayList<String> textCleanList) {
         String text = "";
         for (String t : textCleanList)
-            text = text + "\n---\n" + t.trim();
+            text = text + "\n\n" + t.trim();
 
         final ClipboardManager clipboardManager = (ClipboardManager) getActivity().getSystemService(Context.CLIPBOARD_SERVICE);
         ClipData clipData = ClipData.newPlainText("lens", text);
@@ -95,10 +96,11 @@ public class CopyFragment extends Fragment {
             clipboardManager.setPrimaryClip(clipData);
 
 
-        RelativeLayout copyParent = view.findViewById(R.id.copy_parent);
-        TextView copyMessage = view.findViewById(R.id.copy_message);
+        LinearLayout copyParent = view.findViewById(R.id.copy_parent);
+        final TextView copyMessage = view.findViewById(R.id.copy_message);
         FloatingActionButton retryButton = view.findViewById(R.id.copy_retry);
         FloatingActionButton shareButton = view.findViewById(R.id.copy_share);
+        FloatingActionButton searchButton = view.findViewById(R.id.copy_search);
         copyParent.setVisibility(View.VISIBLE);
         copyMessage.setText(text);
 
@@ -112,22 +114,42 @@ public class CopyFragment extends Fragment {
             }
         });
 
-        final String finalText = text;
         shareButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                String sharedText;
-                if (clipboardManager != null) {
-                    ClipData.Item item = clipboardManager.getPrimaryClip().getItemAt(0);
-                    sharedText = item.getText().toString();
-                } else
-                    sharedText = finalText;
 
-                Intent sendIntent = new Intent();
-                sendIntent.setAction(Intent.ACTION_SEND);
-                sendIntent.putExtra(Intent.EXTRA_TEXT, sharedText + "\n\nScanned with Lens");
-                sendIntent.setType("text/plain");
-                startActivity(sendIntent);
+                String text = copyMessage.getText().toString();
+                if (copyMessage.hasSelection()) {
+                    int start = copyMessage.getSelectionStart();
+                    int end = copyMessage.getSelectionEnd();
+                    String sharedText = text.substring(start, end);
+                    Intent sendIntent = new Intent();
+                    sendIntent.setAction(Intent.ACTION_SEND);
+                    sendIntent.putExtra(Intent.EXTRA_TEXT, sharedText + "\n\nScanned with Lens");
+                    sendIntent.setType("text/plain");
+                    startActivity(sendIntent);
+                } else
+                    Toast.makeText(getActivity(), "Select something first", Toast.LENGTH_SHORT).show();
+
+
+            }
+        });
+
+        searchButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+
+                String text = copyMessage.getText().toString();
+                if (copyMessage.hasSelection()) {
+                    int start = copyMessage.getSelectionStart();
+                    int end = copyMessage.getSelectionEnd();
+                    String searchText = text.substring(start, end);
+                    Intent intent = new Intent(Intent.ACTION_WEB_SEARCH);
+                    intent.putExtra(SearchManager.QUERY, searchText);
+                    startActivity(intent);
+                } else
+                    Toast.makeText(getActivity(), "Select something first", Toast.LENGTH_SHORT).show();
+
             }
         });
 

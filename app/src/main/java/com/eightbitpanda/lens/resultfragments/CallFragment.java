@@ -107,17 +107,8 @@ public class CallFragment extends Fragment {
             setView(view, number[0]);
         } else if (numbersCleanList.size() > 1) {
             AlertDialog.Builder builder = new AlertDialog.Builder(getActivity());
-            builder.setTitle("Multiple Phone Numbers found")
-                    .setPositiveButton("Retry", new DialogInterface.OnClickListener() {
-                        @Override
-                        public void onClick(DialogInterface dialogInterface, int i) {
-                            getActivity().finish();
-                            Intent scannerActivity = new Intent(getActivity(), StaticScannerActivity.class);
-                            scannerActivity.putExtra("Type", "Call");
-                            startActivity(scannerActivity);
-                        }
-                    });
-            ;
+            builder.setTitle("Multiple Phone Numbers found");
+
             final String[] numbers = getArray(numbersCleanList);
             builder.setItems(numbers, new DialogInterface.OnClickListener() {
                 @Override
