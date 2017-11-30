@@ -46,4 +46,14 @@ public class TextRecognizerHelper {
         Frame imageFrame = new Frame.Builder().setBitmap(bitmap).build();
         return textRecognizer.detect(imageFrame);
     }
+
+    public static void clearCache(Context This) {
+        File file = new File(This.getCacheDir(), "lensCache");
+        file.delete();
+    }
+
+    public static void saveHistory(Context This, HistoryItem historyItem) {
+        DatabaseHandler db = new DatabaseHandler(This);
+        db.addHistoryItem(historyItem);
+    }
 }

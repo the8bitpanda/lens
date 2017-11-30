@@ -20,10 +20,13 @@ import android.widget.Toast;
 
 import com.eightbitpanda.lens.R;
 import com.eightbitpanda.lens.StaticScannerActivity;
+import com.eightbitpanda.lens.helper.HistoryItem;
 import com.eightbitpanda.lens.helper.TextRecognizerHelper;
 import com.google.android.gms.vision.text.TextBlock;
 
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Calendar;
 import java.util.HashSet;
 
 
@@ -86,12 +89,12 @@ public class CopyFragment extends Fragment {
 
 
     public void setView(View view, final ArrayList<String> textCleanList) {
-        String text = "";
+        StringBuilder text = new StringBuilder();
         for (String t : textCleanList)
-            text = text + "\n\n" + t.trim();
+            text.append("\n\n").append(t.trim());
 
         final ClipboardManager clipboardManager = (ClipboardManager) getActivity().getSystemService(Context.CLIPBOARD_SERVICE);
-        ClipData clipData = ClipData.newPlainText("lens", text);
+        ClipData clipData = ClipData.newPlainText("lens", text.toString());
         if (clipboardManager != null)
             clipboardManager.setPrimaryClip(clipData);
 
@@ -102,7 +105,11 @@ public class CopyFragment extends Fragment {
         FloatingActionButton shareButton = view.findViewById(R.id.copy_share);
         FloatingActionButton searchButton = view.findViewById(R.id.copy_search);
         copyParent.setVisibility(View.VISIBLE);
-        copyMessage.setText(text);
+        copyMessage.setText(text.toString());
+
+        TextRecognizerHelper.saveHistory(getActivity(), new HistoryItem("Copy", text.toString(), new SimpleDateFormat("yyyy-MM-dd HH:mm:ss").format(Calendar.getInstance().getTime())));
+        TextRecognizerHelper.clearCache(getActivity());
+
 
         retryButton.setOnClickListener(new View.OnClickListener() {
             @Override

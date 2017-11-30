@@ -20,11 +20,14 @@ import android.widget.Toast;
 
 import com.eightbitpanda.lens.R;
 import com.eightbitpanda.lens.StaticScannerActivity;
+import com.eightbitpanda.lens.helper.HistoryItem;
 import com.eightbitpanda.lens.helper.TextRecognizerHelper;
 import com.google.android.gms.vision.text.Text;
 import com.google.android.gms.vision.text.TextBlock;
 
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Calendar;
 import java.util.HashSet;
 
 
@@ -140,6 +143,9 @@ public class WeblinkFragment extends Fragment {
         FloatingActionButton shareButton = view.findViewById(R.id.weblink_share);
         weblinkParent.setVisibility(View.VISIBLE);
         weblinkMessage.setText("Opening " + weblink + " in");
+        TextRecognizerHelper.saveHistory(getActivity(), new HistoryItem("Weblink", weblink, new SimpleDateFormat("yyyy-MM-dd HH:mm:ss").format(Calendar.getInstance().getTime())));
+        TextRecognizerHelper.clearCache(getActivity());
+
 
         countDownTimer = new CountDownTimer(4000, 1000) {
 
@@ -149,7 +155,6 @@ public class WeblinkFragment extends Fragment {
 
             public void onFinish() {
                 getActivity().finish();
-                //Save history using helper
                 openWeblink(weblink);
             }
         }.start();
